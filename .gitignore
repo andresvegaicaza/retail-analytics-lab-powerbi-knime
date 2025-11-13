@@ -1,0 +1,24 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.ipynb_checkpoints
+
+# Data
+data/raw/*
+data/interim/*
+data/processed/*
+data/external/*
+data/database/*
+
+# Environment / secrets
+.env
+infra/.env
+postgre-knime-powerbi/
+
+
+# OS / Editor
+.DS_Store
+.vscode/
