@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 
 # Conexión a Postgres (misma que Docker)
 DATABASE_URL = "postgresql+psycopg2://analytics:analytics@localhost:5433/retail"
@@ -83,7 +83,6 @@ def normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
 
 def load_to_postgres(df: pd.DataFrame):
     engine = create_engine(DATABASE_URL)
-
     full_table_name = f"{TABLE_SCHEMA}.{TABLE_NAME}"
     print(f"🚀 Loading {len(df)} rows into {full_table_name} ...")
 
@@ -92,15 +91,15 @@ def load_to_postgres(df: pd.DataFrame):
             TABLE_NAME,
             con=conn,
             schema=TABLE_SCHEMA,
-            if_exists="append",
+            if_exists="replace",   # 👈 lo que ya pusimos antes
             index=False,
             method="multi",
             chunksize=5000,
         )
 
-        # simple sanity check
+        # sanity check usando text()
         result = conn.execute(
-            f"SELECT COUNT(*) FROM {TABLE_SCHEMA}.{TABLE_NAME};"
+            text(f"SELECT COUNT(*) FROM {TABLE_SCHEMA}.{TABLE_NAME};")
         )
         total_rows = result.scalar()
         print(f"✅ Load complete. Total rows now in {full_table_name}: {total_rows}")
